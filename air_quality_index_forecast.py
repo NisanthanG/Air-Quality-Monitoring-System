@@ -19,7 +19,8 @@ from tensorflow import keras as keras
 from keras.callbacks import EarlyStopping, ReduceLROnPlateau, ModelCheckpoint, TensorBoard
 from numpy import polyfit
 from urllib import request
-# %matplotlib inline
+import streamlit
+%matplotlib inline
 
 df = pd.read_csv('air_quality_ts.csv',parse_dates={'dt' : ['Date', 'Time']}, sep=" ",infer_datetime_format=True,low_memory=False, na_values=['nan','?'], index_col='dt')
 
@@ -43,23 +44,23 @@ len(df_new)
 
 df_new_actual = df_new.copy()
 
-df_new_actual.isnull().sum()
+#df_new_actual.isnull().sum()
 
 df_new_actual = df_new_actual.fillna(df_new_actual.mean())
 
-df_new_actual.shape
+#df_new_actual.shape
 
 df_new_actual['PM2.5'].plot(figsize=(8,4));
 df_new_actual['PM10'].plot(figsize=(8,4));
 
-X = df_new_actual.iloc[:,0:2].values
-diff = list()
-hours_in_the_period = 30
-for i in range(hours_in_the_period, len(X)):
-	value = X[i] - X[i - hours_in_the_period]
-	diff.append(value)
-plt.plot(diff)
-plt.show()
+#X = df_new_actual.iloc[:,0:2].values
+#diff = list()
+#hours_in_the_period = 30
+#for i in range(hours_in_the_period, len(X)):
+#	value = X[i] - X[i - hours_in_the_period]
+#	diff.append(value)
+#plt.plot(diff)
+#plt.show()
 
 X = df_new_actual.iloc[:,0:2]
 df_daily = X.resample('D')
@@ -73,11 +74,12 @@ for i in range(days_in_month, len(daily_mean)):
   value2 = float(str(daily_mean.iloc[i:i+1,1:2]).split()[-1]) - float(str(daily_mean.iloc[i - days_in_month:i - days_in_month+1,1:2]).split()[-1])
   diff1.append(value1) 
   diff2.append(value2)
-plt.plot(diff1)
-plt.plot(diff2)
-plt.show()
+#plt.plot(diff1)
+#plt.plot(diff2)
+#plt.show()
 
-# fit polynomial: x^2*b1 + x*b2 + ... + bn
+#to remove seasonality effects
+# fit polynomial: x*b1 + ... + bn
 X = [i%24 for i in range(0, len(df_new_actual.iloc[:,0:1]))]
 y = df_new_actual.iloc[:,0:2].values
 degree = 1
@@ -96,24 +98,27 @@ diff = list()
 for i in range(len(value1)):
 	value = value1[i] - curve[i]
 	diff.append(value)
-plt.plot(diff)
-plt.show()
-
-col1, col2 = "PM2.5", "PM10"
-corr = df_new_actual[col1].corr(df_new_actual[col2])
-print("Correlation between ", col1, " and ", col2, "is: ", round(corr, 2))
-
-col1, col2 = "PM2.5", "PM2.5"
-corr = df_new_actual[col1].corr(df_new_actual[col2])
-print( "Correlation between ", col1, " and ", col2, "is: ", round(corr, 2))
-
-col1, col2 = "PM10", "PM2.5"
-corr = df_new_actual[col1].corr(df_new_actual[col2])
-print( "Correlation between ", col1, " and ", col2, "is: ", round(corr, 2))
-
-col1, col2 = "PM10", "PM10"
-corr = df_new_actual[col1].corr(df_new_actual[col2])
-print( "Correlation between ", col1, " and ", col2, "is: ", round(corr, 2))
+#plt.plot(diff)
+#plt.show()
+X = [i%24 for i in range(0, len(df_new_actual.iloc[:,1:2]))]
+y = df_new_actual.iloc[:,0:2].values
+degree = 1
+coef = polyfit(X, y, degree)
+print('Coefficients: %s' % coef)
+# create curve
+curve = list()
+for i in range(len(X)):
+	value = coef[-1]
+	for d in range(degree):
+		value += X[i]**(degree-d) * coef[d]
+	curve.append(value)
+# create seasonally adjusted
+value2 = df_new_actual.iloc[:,1:2].values
+diffn = list()
+for i in range(len(value1)):
+	valuex = value2[i] - curve[i]
+	diffn.append(valuex)
+	
 
 # Select features (columns) to be involved intro training and predictions
 cols = list(df_new.iloc[0:1,0:2])
@@ -142,7 +147,7 @@ training_set.hist()
 # %load_ext tensorboard
 
 # Commented out IPython magic to ensure Python compatibility.
-log_folder= 'logs'
+#log_folder= 'logs'
 # %reload_ext tensorboard
 
 df_new_actual.mean()
@@ -192,11 +197,11 @@ from keras import backend as K
 
 model.summary()
 
-callbacks = [TensorBoard(log_dir=log_folder, histogram_freq=1, 
- write_graph=True, write_images=True,     
- update_freq='epoch', profile_batch=2)]
+#callbacks = [TensorBoard(log_dir=log_folder, histogram_freq=1, 
+ #write_graph=True, write_images=True,     
+ #update_freq='epoch', profile_batch=2)]
 
-history = model.fit(X_train, y_train, epochs=100, validation_split=0.2, callbacks = callbacks)
+history = model.fit(X_train, y_train, epochs=100, validation_split=0.2)
 
 # Generate list of sequence of days for predictions
 datelist_future = pd.date_range(datelist_train[-1], periods=n_future, freq='1d').tolist()
@@ -255,16 +260,6 @@ plt.ylabel('PM 2.5', family='Arial', fontsize=10)
 # plt.xticks(rotation=45, fontsize=8)
 # plt.show()
 
-import matplotlib.pyplot as plt
-
-plt.semilogx(history.history["loss"])
-plt.axis([1, 100, 0, 1])
-
-plt.semilogx(history.history["accuracy"])
-plt.axis([1, 100, 0, 1])
-
-plt.semilogx(history.history["mse"])
-plt.axis([1, 100, 0, 2])
 
 from time import sleep
 for i in range(PREDICTIONS_FUTURE.shape[0]):
