@@ -1,4 +1,5 @@
-Matplotlib 
-Tensorflow
-Keras
-Streamlit
+Tensorflow == 2.8.2
+Keras == 2.8.0
+numpy == 1.21.6
+pandas == 1.3.5
+streamlit
