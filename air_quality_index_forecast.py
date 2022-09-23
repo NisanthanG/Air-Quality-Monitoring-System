@@ -20,7 +20,7 @@ from keras.callbacks import EarlyStopping, ReduceLROnPlateau, ModelCheckpoint, T
 from numpy import polyfit
 from urllib import request
 import streamlit
-%matplotlib inline
+#%matplotlib inline
 
 df = pd.read_csv('air_quality_ts.csv',parse_dates={'dt' : ['Date', 'Time']}, sep=" ",infer_datetime_format=True,low_memory=False, na_values=['nan','?'], index_col='dt')
 
@@ -274,4 +274,48 @@ for i in range(PREDICTIONS_FUTURE.shape[0]):
 
 # Commented out IPython magic to ensure Python compatibility.
 # %tensorboard --logdir logs
+
+#JSON request pullout from thingspeak
+
+
+
+#AQI calculator
+PMmin,PMmax,AQImin,AQImax=0,0,0,0
+if PM25 <= 54 :
+	PMmax=54
+	PMmin=0
+	AQImax=50
+	AQImin=0
+elif PM25 <= 154 :
+	PMmax=154
+	PMmin=54
+	AQImax=100
+	AQImin=50
+elif PM25 <= 254 :
+	PMmax=254
+	PMmin=154
+	AQImax=150
+	AQImin=100
+elif PM25 <= 354 :
+	PMmax=354
+	PMmin=254
+	AQImax=200
+	AQImin=150
+elif PM25 <= 154 :
+	PMmax=424
+	PMmin=354
+	AQImax=300
+	AQImin=200
+else:
+	PMmax=604
+	PMmin=424
+	AQImax=500
+	AQImin=300
+AQI = ((PM25-PMmin)*(AQImax-AQImin)/(PMmax-PMmin))+AQImin
+
+#Streamlit edit
+st.title("Air Quality Monitoring System")
+st.write("Real-time Air Pollutants Monitor. The AQI based on PM2.5 values")
+
+
 
