@@ -239,7 +239,7 @@ PREDICTIONS_FUTURE
 PREDICTION_TRAIN
 
 # Set plot size 
- from pylab import rcParams
+from pylab import rcParams
 plt.rcParams['figure.figsize'] = 14, 5
 
 # Plot parameters
