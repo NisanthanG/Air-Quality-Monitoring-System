@@ -239,7 +239,7 @@ PREDICTIONS_FUTURE
 PREDICTION_TRAIN
 
 # Set plot size 
-# from pylab import rcParams
+ from pylab import rcParams
 plt.rcParams['figure.figsize'] = 14, 5
 
 # Plot parameters
@@ -257,10 +257,10 @@ plt.legend(shadow=True)
 plt.title('Predcitions and Acutal Particulate Matter Vaalues', family='Arial', fontsize=12)
 plt.xlabel('Timeline', family='Arial', fontsize=10)
 plt.ylabel('PM 2.5', family='Arial', fontsize=10)
-# plt.xticks(rotation=45, fontsize=8)
-# plt.show()
+plt.xticks(rotation=45, fontsize=8)
+plt.show()
 
-
+#sending prediction results to a ThingSpeak channel
 from time import sleep
 for i in range(PREDICTIONS_FUTURE.shape[0]):
   value = str(PREDICTIONS_FUTURE.iloc[i:i+1,0:1])
@@ -276,8 +276,22 @@ for i in range(PREDICTIONS_FUTURE.shape[0]):
 # %tensorboard --logdir logs
 
 #JSON request pullout from thingspeak
+import requests
+import json
+response = requests.get('https://api.thingspeak.com/channels/1660930/feeds.json?api_key=G2HE3H8NH5FA7C0K&results=2')
+data = json.loads(response.text)
 
+print(data)
 
+import pandas as pd
+df = pd.DataFrame.from_dict(data['feeds'])
+recentdata = df.tail(1)
+
+temp = recentdata.at[1,'field1']
+hum = recentdata.at[1,'field2']
+co2 = recentdata.at[1,'field3']
+PM25 = recentdata.at[1,'field5']
+PM10 = recentdata.at[1,'field6']
 
 #AQI calculator
 PMmin,PMmax,AQImin,AQImax=0,0,0,0
@@ -316,6 +330,7 @@ AQI = ((PM25-PMmin)*(AQImax-AQImin)/(PMmax-PMmin))+AQImin
 #Streamlit edit
 st.title("Air Quality Monitoring System")
 st.write("Real-time Air Pollutants Monitor. The AQI based on PM2.5 values")
-
+st.header("Temperature : %d"(temp))
+st.pyplot()
 
 
