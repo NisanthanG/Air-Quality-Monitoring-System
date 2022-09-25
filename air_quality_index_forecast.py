@@ -11,7 +11,8 @@ Original file is located at
 # data preprocessing
 import pandas as pd
 import numpy as np
-from matplotlib import pyplot as plt
+import plotly 
+from plotly import figure_factory as ff
 import tensorflow as tf
 import datetime as dt
 from datetime import datetime
@@ -19,7 +20,7 @@ from tensorflow import keras as keras
 from keras.callbacks import EarlyStopping, ReduceLROnPlateau, ModelCheckpoint, TensorBoard
 from numpy import polyfit
 from urllib import request
-import streamlit
+import streamlit as st
 #%matplotlib inline
 
 df = pd.read_csv('air_quality_ts.csv',parse_dates={'dt' : ['Date', 'Time']}, sep=" ",infer_datetime_format=True,low_memory=False, na_values=['nan','?'], index_col='dt')
