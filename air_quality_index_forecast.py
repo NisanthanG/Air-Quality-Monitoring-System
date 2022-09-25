@@ -10,9 +10,8 @@ Original file is located at
 # Commented out IPython magic to ensure Python compatibility.
 # data preprocessing
 import pandas as pd
-import numpy as np
-import plotly 
-from plotly import figure_factory as ff
+import numpy as np 
+#from plotly import figure_factory as ff
 import tensorflow as tf
 import datetime as dt
 from datetime import datetime
@@ -166,8 +165,8 @@ for i in range(n_past, len(training_set_scaled) - n_future +1):
 
 X_train, y_train = np.array(X_train), np.array(y_train)
 
-print('X_train shape == {}.'.format(X_train.shape))
-print('y_train shape == {}.'.format(y_train.shape))
+#print('X_train shape == {}.'.format(X_train.shape))
+#print('y_train shape == {}.'.format(y_train.shape))
 
 model = tf.keras.models.Sequential([
   tf.keras.layers.Conv1D(filters=32, kernel_size=2,
@@ -331,7 +330,11 @@ AQI = ((PM25-PMmin)*(AQImax-AQImin)/(PMmax-PMmin))+AQImin
 #Streamlit edit
 st.title("Air Quality Monitoring System")
 st.write("Real-time Air Pollutants Monitor. The AQI based on PM2.5 values")
-st.header("Temperature : %d"(temp))
+st.header("Temperature : %d",(temp))
+st.header("Humidity : %d",(hum))
+st.header("CO2 in ppm : %d",(co2))
+st.header("PM 2.5 : %d",(PM25))
+st.header("PM 10 : %d",(PM10))
 st.pyplot()
 
 
