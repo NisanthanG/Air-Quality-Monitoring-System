@@ -239,27 +239,27 @@ PREDICTIONS_FUTURE
 PREDICTION_TRAIN
 
 # Set plot size 
-from pylab import rcParams
-plt.rcParams['figure.figsize'] = 14, 5
+#from pylab import rcParams
+#plt.rcParams['figure.figsize'] = 14, 5
 
 # Plot parameters
 START_DATE_FOR_PLOTTING = '2019-07-27'
 
-plt.plot(PREDICTIONS_FUTURE.index, PREDICTIONS_FUTURE['PM2.5'], color='r', label='Predicted Particulate matter')
-plt.plot(PREDICTION_TRAIN.loc[START_DATE_FOR_PLOTTING:].index, PREDICTION_TRAIN.loc[START_DATE_FOR_PLOTTING:]['PM2.5'], color='orange', label='Training predictions')
-plt.plot(df_new_actual.loc[START_DATE_FOR_PLOTTING:].index, df_new_actual.loc[START_DATE_FOR_PLOTTING:]['PM2.5'], color='b', label='Actual data')
+#plt.plot(PREDICTIONS_FUTURE.index, PREDICTIONS_FUTURE['PM2.5'], color='r', label='Predicted Particulate matter')
+#plt.plot(PREDICTION_TRAIN.loc[START_DATE_FOR_PLOTTING:].index, PREDICTION_TRAIN.loc[START_DATE_FOR_PLOTTING:]['PM2.5'], color='orange', label='Training predictions')
+#plt.plot(df_new_actual.loc[START_DATE_FOR_PLOTTING:].index, df_new_actual.loc[START_DATE_FOR_PLOTTING:]['PM2.5'], color='b', label='Actual data')
 
-plt.axvline(x = min(PREDICTIONS_FUTURE.index), color='green', linewidth=2, linestyle='--')
+#plt.axvline(x = min(PREDICTIONS_FUTURE.index), color='green', linewidth=2, linestyle='--')
 
-plt.grid(which='major', color='#cccccc', alpha=0.5)
+#plt.grid(which='major', color='#cccccc', alpha=0.5)
 
-plt.legend(shadow=True)
-plt.title('Predcitions and Acutal Particulate Matter Vaalues', family='Arial', fontsize=12)
-plt.xlabel('Timeline', family='Arial', fontsize=10)
-plt.ylabel('PM 2.5', family='Arial', fontsize=10)
-plt.xticks(rotation=45, fontsize=8)
-plt.show()
-
+#plt.legend(shadow=True)
+#plt.title('Predcitions and Acutal Particulate Matter Vaalues', family='Arial', fontsize=12)
+#plt.xlabel('Timeline', family='Arial', fontsize=10)
+#plt.ylabel('PM 2.5', family='Arial', fontsize=10)
+#plt.xticks(rotation=45, fontsize=8)
+#plt.show()
+###
 #sending prediction results to a ThingSpeak channel
 from time import sleep
 for i in range(PREDICTIONS_FUTURE.shape[0]):
